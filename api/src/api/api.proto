@@ -1,24 +1,32 @@
+// protoc --go-grpc_opt=module=github.com/pete-robinson/set-maker-grpc --go-grpc_out=. --go_opt=module=github.com/pete-robinson/set-maker-grpc --go_out=. api/src/api/api.proto
 syntax = "proto3";
 
 package api;
 
 option go_package = "github.com/pete-robinson/set-maker-grpc/internal/grpc/api";
 
-import "github.com/pete-robinson/set-maker-grpc/api/src/domain/domain.proto";
+import "api/src/domain/domain.proto";
 import "google/protobuf/wrappers.proto";
 
 service SetMakerService {
     // artists
     rpc GetArtist(google.protobuf.StringValue) returns (domain.Artist);
+    rpc CreateArtist(CreateArtistRequest) returns (domain.Artist);
     rpc UpdateArtist(domain.Artist) returns (domain.Artist);
     rpc DeleteArtist(google.protobuf.StringValue) returns (DeleteArtistResponse);
     rpc ListArtists(ListArtistsRequest) returns (ListArtistsResponse);
 
     // songs
     rpc GetSong(google.protobuf.StringValue) returns (domain.Song);
+    rpc CreateSong(CreateSongRequest) returns (domain.Song);
     rpc UpdateSong(domain.Song) returns (domain.Song);
     rpc DeleteSong(google.protobuf.StringValue) returns (DeleteSongResponse);
     rpc ListSongs(ListSongsRequest) returns (ListSongsResponse);
+}
+
+message CreateArtistRequest {
+    string name = 1;
+    string image = 2;
 }
 
 message ListArtistsRequest {
@@ -29,6 +37,13 @@ message ListArtistsRequest {
 message ListArtistsResponse {
     repeated domain.Artist results = 1;
     string searchAfter = 2;
+}
+
+message CreateSongRequest {
+    string title = 2;
+    domain.Artist artist = 3;
+    domain.Key key = 4;
+    domain.Tonality tonality = 5;
 }
 
 message ListSongsRequest {

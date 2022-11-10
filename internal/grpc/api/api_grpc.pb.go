@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v3.21.9
-// source: github.com/pete-robinson/set-maker-grpc/api/src/api/api.proto
+// source: api/src/api/api.proto
 
 package api
 
@@ -26,11 +26,13 @@ const _ = grpc.SupportPackageIsVersion7
 type SetMakerServiceClient interface {
 	// artists
 	GetArtist(ctx context.Context, in *wrapperspb.StringValue, opts ...grpc.CallOption) (*domain.Artist, error)
+	CreateArtist(ctx context.Context, in *CreateArtistRequest, opts ...grpc.CallOption) (*domain.Artist, error)
 	UpdateArtist(ctx context.Context, in *domain.Artist, opts ...grpc.CallOption) (*domain.Artist, error)
 	DeleteArtist(ctx context.Context, in *wrapperspb.StringValue, opts ...grpc.CallOption) (*DeleteArtistResponse, error)
 	ListArtists(ctx context.Context, in *ListArtistsRequest, opts ...grpc.CallOption) (*ListArtistsResponse, error)
 	// songs
 	GetSong(ctx context.Context, in *wrapperspb.StringValue, opts ...grpc.CallOption) (*domain.Song, error)
+	CreateSong(ctx context.Context, in *CreateSongRequest, opts ...grpc.CallOption) (*domain.Song, error)
 	UpdateSong(ctx context.Context, in *domain.Song, opts ...grpc.CallOption) (*domain.Song, error)
 	DeleteSong(ctx context.Context, in *wrapperspb.StringValue, opts ...grpc.CallOption) (*DeleteSongResponse, error)
 	ListSongs(ctx context.Context, in *ListSongsRequest, opts ...grpc.CallOption) (*ListSongsResponse, error)
@@ -47,6 +49,15 @@ func NewSetMakerServiceClient(cc grpc.ClientConnInterface) SetMakerServiceClient
 func (c *setMakerServiceClient) GetArtist(ctx context.Context, in *wrapperspb.StringValue, opts ...grpc.CallOption) (*domain.Artist, error) {
 	out := new(domain.Artist)
 	err := c.cc.Invoke(ctx, "/api.SetMakerService/GetArtist", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *setMakerServiceClient) CreateArtist(ctx context.Context, in *CreateArtistRequest, opts ...grpc.CallOption) (*domain.Artist, error) {
+	out := new(domain.Artist)
+	err := c.cc.Invoke(ctx, "/api.SetMakerService/CreateArtist", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -89,6 +100,15 @@ func (c *setMakerServiceClient) GetSong(ctx context.Context, in *wrapperspb.Stri
 	return out, nil
 }
 
+func (c *setMakerServiceClient) CreateSong(ctx context.Context, in *CreateSongRequest, opts ...grpc.CallOption) (*domain.Song, error) {
+	out := new(domain.Song)
+	err := c.cc.Invoke(ctx, "/api.SetMakerService/CreateSong", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *setMakerServiceClient) UpdateSong(ctx context.Context, in *domain.Song, opts ...grpc.CallOption) (*domain.Song, error) {
 	out := new(domain.Song)
 	err := c.cc.Invoke(ctx, "/api.SetMakerService/UpdateSong", in, out, opts...)
@@ -122,11 +142,13 @@ func (c *setMakerServiceClient) ListSongs(ctx context.Context, in *ListSongsRequ
 type SetMakerServiceServer interface {
 	// artists
 	GetArtist(context.Context, *wrapperspb.StringValue) (*domain.Artist, error)
+	CreateArtist(context.Context, *CreateArtistRequest) (*domain.Artist, error)
 	UpdateArtist(context.Context, *domain.Artist) (*domain.Artist, error)
 	DeleteArtist(context.Context, *wrapperspb.StringValue) (*DeleteArtistResponse, error)
 	ListArtists(context.Context, *ListArtistsRequest) (*ListArtistsResponse, error)
 	// songs
 	GetSong(context.Context, *wrapperspb.StringValue) (*domain.Song, error)
+	CreateSong(context.Context, *CreateSongRequest) (*domain.Song, error)
 	UpdateSong(context.Context, *domain.Song) (*domain.Song, error)
 	DeleteSong(context.Context, *wrapperspb.StringValue) (*DeleteSongResponse, error)
 	ListSongs(context.Context, *ListSongsRequest) (*ListSongsResponse, error)
@@ -140,6 +162,9 @@ type UnimplementedSetMakerServiceServer struct {
 func (UnimplementedSetMakerServiceServer) GetArtist(context.Context, *wrapperspb.StringValue) (*domain.Artist, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetArtist not implemented")
 }
+func (UnimplementedSetMakerServiceServer) CreateArtist(context.Context, *CreateArtistRequest) (*domain.Artist, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateArtist not implemented")
+}
 func (UnimplementedSetMakerServiceServer) UpdateArtist(context.Context, *domain.Artist) (*domain.Artist, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateArtist not implemented")
 }
@@ -151,6 +176,9 @@ func (UnimplementedSetMakerServiceServer) ListArtists(context.Context, *ListArti
 }
 func (UnimplementedSetMakerServiceServer) GetSong(context.Context, *wrapperspb.StringValue) (*domain.Song, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSong not implemented")
+}
+func (UnimplementedSetMakerServiceServer) CreateSong(context.Context, *CreateSongRequest) (*domain.Song, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateSong not implemented")
 }
 func (UnimplementedSetMakerServiceServer) UpdateSong(context.Context, *domain.Song) (*domain.Song, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateSong not implemented")
@@ -188,6 +216,24 @@ func _SetMakerService_GetArtist_Handler(srv interface{}, ctx context.Context, de
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(SetMakerServiceServer).GetArtist(ctx, req.(*wrapperspb.StringValue))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SetMakerService_CreateArtist_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateArtistRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SetMakerServiceServer).CreateArtist(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.SetMakerService/CreateArtist",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SetMakerServiceServer).CreateArtist(ctx, req.(*CreateArtistRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -264,6 +310,24 @@ func _SetMakerService_GetSong_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SetMakerService_CreateSong_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateSongRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SetMakerServiceServer).CreateSong(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.SetMakerService/CreateSong",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SetMakerServiceServer).CreateSong(ctx, req.(*CreateSongRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _SetMakerService_UpdateSong_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(domain.Song)
 	if err := dec(in); err != nil {
@@ -330,6 +394,10 @@ var SetMakerService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _SetMakerService_GetArtist_Handler,
 		},
 		{
+			MethodName: "CreateArtist",
+			Handler:    _SetMakerService_CreateArtist_Handler,
+		},
+		{
 			MethodName: "UpdateArtist",
 			Handler:    _SetMakerService_UpdateArtist_Handler,
 		},
@@ -346,6 +414,10 @@ var SetMakerService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _SetMakerService_GetSong_Handler,
 		},
 		{
+			MethodName: "CreateSong",
+			Handler:    _SetMakerService_CreateSong_Handler,
+		},
+		{
 			MethodName: "UpdateSong",
 			Handler:    _SetMakerService_UpdateSong_Handler,
 		},
@@ -359,5 +431,5 @@ var SetMakerService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "github.com/pete-robinson/set-maker-grpc/api/src/api/api.proto",
+	Metadata: "api/src/api/api.proto",
 }

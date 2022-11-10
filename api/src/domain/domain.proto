@@ -1,10 +1,9 @@
+// protoc --go_opt=module=github.com/pete-robinson/set-maker-grpc --go_out=. api/src/domain/domain.proto
 syntax = "proto3";
 
 package domain;
 
 option go_package = "github.com/pete-robinson/set-maker-grpc/internal/grpc/domain";
-
-import "google/protobuf/timestamp.proto";
 
 message Artist {
     string uuid = 1;
@@ -47,6 +46,6 @@ enum Tonality {
 }
 
 message Metadata {
-    google.protobuf.Timestamp createdAt = 1;
-    google.protobuf.Timestamp updatedAt = 2;
+    string createdAt = 1;
+    string updatedAt = 2;
 }
