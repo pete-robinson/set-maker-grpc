@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package api;
+
+option go_package = "github.com/pete-robinson/set-maker-grpc/internal/grpc/api";
+
+import "github.com/pete-robinson/set-maker-grpc/api/src/domain/domain.proto";
+import "google/protobuf/wrappers.proto";
+
+service SetMakerService {
+    // artists
+    rpc GetArtist(google.protobuf.StringValue) returns (domain.Artist);
+    rpc UpdateArtist(domain.Artist) returns (domain.Artist);
+    rpc DeleteArtist(google.protobuf.StringValue) returns (DeleteArtistResponse);
+    rpc ListArtists(ListArtistsRequest) returns (ListArtistsResponse);
+
+    // songs
+    rpc GetSong(google.protobuf.StringValue) returns (domain.Song);
+    rpc UpdateSong(domain.Song) returns (domain.Song);
+    rpc DeleteSong(google.protobuf.StringValue) returns (DeleteSongResponse);
+    rpc ListSongs(ListSongsRequest) returns (ListSongsResponse);
+}
+
+message ListArtistsRequest {
+    int32 limit = 1;
+    string cursor = 2;
+}
+
+message ListArtistsResponse {
+    repeated domain.Artist results = 1;
+    string searchAfter = 2;
+}
+
+message ListSongsRequest {
+    int32 limit = 1;
+    string cursor = 2;
+    string artistId = 3;
+}
+
+message ListSongsResponse {
+    repeated domain.Song results = 1;
+    string searchAfter = 2;
+}
+
+message DeleteArtistResponse {
+    string uuid = 1;
+    bool deleted = 2;
+}
+
+message DeleteSongResponse {
+    string uuid = 1;
+    bool deleted = 2;
+}

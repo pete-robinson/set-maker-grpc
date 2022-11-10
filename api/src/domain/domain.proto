@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package domain;
+
+option go_package = "github.com/pete-robinson/set-maker-grpc/internal/grpc/domain";
+
+import "google/protobuf/timestamp.proto";
+
+message Artist {
+    string uuid = 1;
+    string name = 2;
+    string image = 3;
+    Metadata metadata = 5;
+}
+
+message Song {
+    string uuid = 1;
+    string title = 2;
+    Artist artist = 3;
+    Key key = 4;
+    Tonality tonality = 5;
+    Metadata metadata = 6;
+}
+
+enum Key {
+    KEY_UNKNOWN = 0;
+    KEY_A = 1;
+    KEY_B_FLAT = 2;
+    KEY_B = 3;
+    KEY_C = 4;
+    KEY_C_SHARP = 5;
+    KEY_D = 6;
+    KEY_D_SHARP = 7;
+    KEY_E = 8;
+    KEY_F = 9;
+    KEY_F_SHARP = 10;
+    KEY_G = 11;
+    KEY_G_SHARP = 12;
+    KEY_MIXED = 13;
+}
+
+enum Tonality {
+    TONALITY_UNKNOWN = 0;
+    TONALITY_MAJOR = 1;
+    TONALITY_MINOR = 2;
+    TONALITY_MIXED = 3;
+}
+
+message Metadata {
+    google.protobuf.Timestamp createdAt = 1;
+    google.protobuf.Timestamp updatedAt = 2;
+}
