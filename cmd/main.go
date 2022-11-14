@@ -12,12 +12,13 @@ import (
 	"github.com/pete-robinson/set-maker-grpc/internal/utils"
 	logger "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
 const (
-	EnvAwsAccessKey    = "aws_access_key_id"
-	EnvAwsAccessSecret = "aws_secret_access_key"
-	EnvAwsRegion       = "aws_region"
+	EnvAwsAccessKey    = "AWS_ACCESS_KEY_ID"
+	EnvAwsAccessSecret = "AWS_SECRET_ACCESS_KEY"
+	EnvAwsRegion       = "AWS_REGION"
 )
 
 func main() {
@@ -42,22 +43,24 @@ func main() {
 	}
 
 	dynamoClient := utils.CreateDynamoClient(awsConfig)
+	snsClient := utils.CreateSnsClient(awsConfig)
 
 	// init epository
 	repo := repository.NewDynamoRepository(dynamoClient)
 
 	// init Service
-	service := service.NewService(repo)
+	service := service.NewService(repo, snsClient)
 
 	// init GRPC Server
 	server, err := transport.NewServer(service)
 	if err != nil {
 		panic(err)
 	}
-	grpcServer := grpc.NewServer()
-	api.RegisterSetMakerServiceServer(grpcServer, server)
+	s := grpc.NewServer()
+	api.RegisterSetMakerServiceServer(s, server)
+	reflection.Register(s)
 
-	err = utils.RunGrpcServer(ctx, grpcServer)
+	err = utils.RunGrpcServer(ctx, s)
 	if err != nil {
 		panic(err)
 	}

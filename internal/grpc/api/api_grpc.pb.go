@@ -27,13 +27,13 @@ type SetMakerServiceClient interface {
 	// artists
 	GetArtist(ctx context.Context, in *wrapperspb.StringValue, opts ...grpc.CallOption) (*domain.Artist, error)
 	CreateArtist(ctx context.Context, in *CreateArtistRequest, opts ...grpc.CallOption) (*domain.Artist, error)
-	UpdateArtist(ctx context.Context, in *domain.Artist, opts ...grpc.CallOption) (*domain.Artist, error)
+	UpdateArtist(ctx context.Context, in *UpdateArtistRequest, opts ...grpc.CallOption) (*domain.Artist, error)
 	DeleteArtist(ctx context.Context, in *wrapperspb.StringValue, opts ...grpc.CallOption) (*DeleteArtistResponse, error)
 	ListArtists(ctx context.Context, in *ListArtistsRequest, opts ...grpc.CallOption) (*ListArtistsResponse, error)
 	// songs
 	GetSong(ctx context.Context, in *wrapperspb.StringValue, opts ...grpc.CallOption) (*domain.Song, error)
 	CreateSong(ctx context.Context, in *CreateSongRequest, opts ...grpc.CallOption) (*domain.Song, error)
-	UpdateSong(ctx context.Context, in *domain.Song, opts ...grpc.CallOption) (*domain.Song, error)
+	UpdateSong(ctx context.Context, in *UpdateSongRequest, opts ...grpc.CallOption) (*domain.Song, error)
 	DeleteSong(ctx context.Context, in *wrapperspb.StringValue, opts ...grpc.CallOption) (*DeleteSongResponse, error)
 	ListSongs(ctx context.Context, in *ListSongsRequest, opts ...grpc.CallOption) (*ListSongsResponse, error)
 }
@@ -64,7 +64,7 @@ func (c *setMakerServiceClient) CreateArtist(ctx context.Context, in *CreateArti
 	return out, nil
 }
 
-func (c *setMakerServiceClient) UpdateArtist(ctx context.Context, in *domain.Artist, opts ...grpc.CallOption) (*domain.Artist, error) {
+func (c *setMakerServiceClient) UpdateArtist(ctx context.Context, in *UpdateArtistRequest, opts ...grpc.CallOption) (*domain.Artist, error) {
 	out := new(domain.Artist)
 	err := c.cc.Invoke(ctx, "/api.SetMakerService/UpdateArtist", in, out, opts...)
 	if err != nil {
@@ -109,7 +109,7 @@ func (c *setMakerServiceClient) CreateSong(ctx context.Context, in *CreateSongRe
 	return out, nil
 }
 
-func (c *setMakerServiceClient) UpdateSong(ctx context.Context, in *domain.Song, opts ...grpc.CallOption) (*domain.Song, error) {
+func (c *setMakerServiceClient) UpdateSong(ctx context.Context, in *UpdateSongRequest, opts ...grpc.CallOption) (*domain.Song, error) {
 	out := new(domain.Song)
 	err := c.cc.Invoke(ctx, "/api.SetMakerService/UpdateSong", in, out, opts...)
 	if err != nil {
@@ -143,13 +143,13 @@ type SetMakerServiceServer interface {
 	// artists
 	GetArtist(context.Context, *wrapperspb.StringValue) (*domain.Artist, error)
 	CreateArtist(context.Context, *CreateArtistRequest) (*domain.Artist, error)
-	UpdateArtist(context.Context, *domain.Artist) (*domain.Artist, error)
+	UpdateArtist(context.Context, *UpdateArtistRequest) (*domain.Artist, error)
 	DeleteArtist(context.Context, *wrapperspb.StringValue) (*DeleteArtistResponse, error)
 	ListArtists(context.Context, *ListArtistsRequest) (*ListArtistsResponse, error)
 	// songs
 	GetSong(context.Context, *wrapperspb.StringValue) (*domain.Song, error)
 	CreateSong(context.Context, *CreateSongRequest) (*domain.Song, error)
-	UpdateSong(context.Context, *domain.Song) (*domain.Song, error)
+	UpdateSong(context.Context, *UpdateSongRequest) (*domain.Song, error)
 	DeleteSong(context.Context, *wrapperspb.StringValue) (*DeleteSongResponse, error)
 	ListSongs(context.Context, *ListSongsRequest) (*ListSongsResponse, error)
 	mustEmbedUnimplementedSetMakerServiceServer()
@@ -165,7 +165,7 @@ func (UnimplementedSetMakerServiceServer) GetArtist(context.Context, *wrapperspb
 func (UnimplementedSetMakerServiceServer) CreateArtist(context.Context, *CreateArtistRequest) (*domain.Artist, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateArtist not implemented")
 }
-func (UnimplementedSetMakerServiceServer) UpdateArtist(context.Context, *domain.Artist) (*domain.Artist, error) {
+func (UnimplementedSetMakerServiceServer) UpdateArtist(context.Context, *UpdateArtistRequest) (*domain.Artist, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateArtist not implemented")
 }
 func (UnimplementedSetMakerServiceServer) DeleteArtist(context.Context, *wrapperspb.StringValue) (*DeleteArtistResponse, error) {
@@ -180,7 +180,7 @@ func (UnimplementedSetMakerServiceServer) GetSong(context.Context, *wrapperspb.S
 func (UnimplementedSetMakerServiceServer) CreateSong(context.Context, *CreateSongRequest) (*domain.Song, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateSong not implemented")
 }
-func (UnimplementedSetMakerServiceServer) UpdateSong(context.Context, *domain.Song) (*domain.Song, error) {
+func (UnimplementedSetMakerServiceServer) UpdateSong(context.Context, *UpdateSongRequest) (*domain.Song, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateSong not implemented")
 }
 func (UnimplementedSetMakerServiceServer) DeleteSong(context.Context, *wrapperspb.StringValue) (*DeleteSongResponse, error) {
@@ -239,7 +239,7 @@ func _SetMakerService_CreateArtist_Handler(srv interface{}, ctx context.Context,
 }
 
 func _SetMakerService_UpdateArtist_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(domain.Artist)
+	in := new(UpdateArtistRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -251,7 +251,7 @@ func _SetMakerService_UpdateArtist_Handler(srv interface{}, ctx context.Context,
 		FullMethod: "/api.SetMakerService/UpdateArtist",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SetMakerServiceServer).UpdateArtist(ctx, req.(*domain.Artist))
+		return srv.(SetMakerServiceServer).UpdateArtist(ctx, req.(*UpdateArtistRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -329,7 +329,7 @@ func _SetMakerService_CreateSong_Handler(srv interface{}, ctx context.Context, d
 }
 
 func _SetMakerService_UpdateSong_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(domain.Song)
+	in := new(UpdateSongRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -341,7 +341,7 @@ func _SetMakerService_UpdateSong_Handler(srv interface{}, ctx context.Context, d
 		FullMethod: "/api.SetMakerService/UpdateSong",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SetMakerServiceServer).UpdateSong(ctx, req.(*domain.Song))
+		return srv.(SetMakerServiceServer).UpdateSong(ctx, req.(*UpdateSongRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

@@ -12,14 +12,14 @@ service SetMakerService {
     // artists
     rpc GetArtist(google.protobuf.StringValue) returns (domain.Artist);
     rpc CreateArtist(CreateArtistRequest) returns (domain.Artist);
-    rpc UpdateArtist(domain.Artist) returns (domain.Artist);
+    rpc UpdateArtist(UpdateArtistRequest) returns (domain.Artist);
     rpc DeleteArtist(google.protobuf.StringValue) returns (DeleteArtistResponse);
     rpc ListArtists(ListArtistsRequest) returns (ListArtistsResponse);
 
     // songs
     rpc GetSong(google.protobuf.StringValue) returns (domain.Song);
     rpc CreateSong(CreateSongRequest) returns (domain.Song);
-    rpc UpdateSong(domain.Song) returns (domain.Song);
+    rpc UpdateSong(UpdateSongRequest) returns (domain.Song);
     rpc DeleteSong(google.protobuf.StringValue) returns (DeleteSongResponse);
     rpc ListSongs(ListSongsRequest) returns (ListSongsResponse);
 }
@@ -27,6 +27,12 @@ service SetMakerService {
 message CreateArtistRequest {
     string name = 1;
     string image = 2;
+}
+
+message UpdateArtistRequest {
+    string id = 1;
+    string name = 2;
+    string image = 3;
 }
 
 message ListArtistsRequest {
@@ -40,6 +46,14 @@ message ListArtistsResponse {
 }
 
 message CreateSongRequest {
+    string title = 1;
+    domain.Artist artist = 32;
+    domain.Key key = 3;
+    domain.Tonality tonality = 4;
+}
+
+message UpdateSongRequest {
+    string id = 1;
     string title = 2;
     domain.Artist artist = 3;
     domain.Key key = 4;
@@ -58,11 +72,11 @@ message ListSongsResponse {
 }
 
 message DeleteArtistResponse {
-    string uuid = 1;
+    string id = 1;
     bool deleted = 2;
 }
 
 message DeleteSongResponse {
-    string uuid = 1;
+    string id = 1;
     bool deleted = 2;
 }

@@ -16,7 +16,7 @@ func (s *Server) CreateSong(ctx context.Context, req *api.CreateSongRequest) (*d
 	return &domain.Song{}, nil
 }
 
-func (s *Server) UpdateSong(ctx context.Context, Song *domain.Song) (*domain.Song, error) {
+func (s *Server) UpdateSong(ctx context.Context, req *api.UpdateSongRequest) (*domain.Song, error) {
 	return &domain.Song{}, nil
 }
 
