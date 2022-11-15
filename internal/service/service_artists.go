@@ -5,8 +5,8 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/service/sns"
 	"github.com/google/uuid"
-	"github.com/pete-robinson/set-maker-grpc/internal/grpc/domain"
 	"github.com/pete-robinson/set-maker-grpc/internal/utils"
+	setmakerpb "github.com/pete-robinson/setmaker-proto/dist"
 	logger "github.com/sirupsen/logrus"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -14,7 +14,7 @@ import (
 
 const SnsTopic = "create-artist.fifo"
 
-func (s *Service) GetArtist(ctx context.Context, id uuid.UUID) (*domain.Artist, error) {
+func (s *Service) GetArtist(ctx context.Context, id uuid.UUID) (*setmakerpb.Artist, error) {
 	artist, err := s.repository.GetArtist(ctx, id)
 	if err != nil {
 		logger.WithField("id", id).Errorf("Could not fetch artist: %s", err)
@@ -24,10 +24,10 @@ func (s *Service) GetArtist(ctx context.Context, id uuid.UUID) (*domain.Artist, 
 	return artist, nil
 }
 
-func (s *Service) CreateArtist(ctx context.Context, artist *domain.Artist) (*domain.Artist, error) {
+func (s *Service) CreateArtist(ctx context.Context, artist *setmakerpb.Artist) (*setmakerpb.Artist, error) {
 	// init UUID and meta
 	artist.Id = uuid.New().String()
-	artist.Metadata = utils.CreateMetaData(&domain.Metadata{})
+	utils.SetMetaData(&setmakerpb.Metadata{})
 
 	err := s.repository.PutArtist(ctx, artist)
 	if err != nil {
@@ -56,7 +56,7 @@ func (s *Service) CreateArtist(ctx context.Context, artist *domain.Artist) (*dom
 	return artist, nil
 }
 
-func (s *Service) UpdateArtist(ctx context.Context, artist *domain.Artist) (*domain.Artist, error) {
+func (s *Service) UpdateArtist(ctx context.Context, artist *setmakerpb.Artist) (*setmakerpb.Artist, error) {
 	// fetch the artist to update
 	targetId, err := uuid.Parse(artist.Id)
 	if err != nil {
@@ -71,7 +71,7 @@ func (s *Service) UpdateArtist(ctx context.Context, artist *domain.Artist) (*dom
 	// reset the data
 	target.Name = artist.Name
 	target.Image = artist.Image
-	target.Metadata = utils.CreateMetaData(target.Metadata)
+	utils.SetMetaData(target.Metadata)
 
 	// update artist
 	err = s.repository.PutArtist(ctx, target)

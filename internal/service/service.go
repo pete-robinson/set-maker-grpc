@@ -5,13 +5,13 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/service/sns"
 	"github.com/google/uuid"
-	"github.com/pete-robinson/set-maker-grpc/internal/grpc/domain"
+	setmakerpb "github.com/pete-robinson/setmaker-proto/dist"
 )
 
 type Repository interface {
-	ListArtists(context.Context) ([]*domain.Artist, error)
-	GetArtist(context.Context, uuid.UUID) (*domain.Artist, error)
-	PutArtist(context.Context, *domain.Artist) error
+	ListArtists(context.Context) ([]*setmakerpb.Artist, error)
+	GetArtist(context.Context, uuid.UUID) (*setmakerpb.Artist, error)
+	PutArtist(context.Context, *setmakerpb.Artist) error
 	DeleteArtist(context.Context, uuid.UUID) error
 }
 

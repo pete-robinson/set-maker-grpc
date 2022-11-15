@@ -3,16 +3,13 @@ package utils
 import (
 	"time"
 
-	"github.com/pete-robinson/set-maker-grpc/internal/grpc/domain"
+	setmakerpb "github.com/pete-robinson/setmaker-proto/dist"
 )
 
-func CreateMetaData(meta *domain.Metadata) *domain.Metadata {
+func SetMetaData(meta *setmakerpb.Metadata) {
 	if meta.CreatedAt == "" {
 		meta.CreatedAt = time.Now().String()
 	}
 
-	return &domain.Metadata{
-		CreatedAt: meta.CreatedAt,
-		UpdatedAt: time.Now().String(),
-	}
+	meta.UpdatedAt = time.Now().String()
 }
