@@ -27,7 +27,7 @@ func (s *Service) GetArtist(ctx context.Context, id uuid.UUID) (*setmakerpb.Arti
 func (s *Service) CreateArtist(ctx context.Context, artist *setmakerpb.Artist) (*setmakerpb.Artist, error) {
 	// init UUID and meta
 	artist.Id = uuid.New().String()
-	artist.Metadata = utils.CreateMetaData(&setmakerpb.Metadata{})
+	utils.SetMetaData(&setmakerpb.Metadata{})
 
 	err := s.repository.PutArtist(ctx, artist)
 	if err != nil {
@@ -71,7 +71,7 @@ func (s *Service) UpdateArtist(ctx context.Context, artist *setmakerpb.Artist) (
 	// reset the data
 	target.Name = artist.Name
 	target.Image = artist.Image
-	target.Metadata = utils.CreateMetaData(target.Metadata)
+	utils.SetMetaData(target.Metadata)
 
 	// update artist
 	err = s.repository.PutArtist(ctx, target)
