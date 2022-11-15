@@ -8,7 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/google/uuid"
-	"github.com/pete-robinson/set-maker-grpc/internal/grpc/domain"
+	setmakerpb "github.com/pete-robinson/setmaker-proto/dist"
 	logger "github.com/sirupsen/logrus"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -16,12 +16,12 @@ import (
 
 const TableName = "artists"
 
-func (d *DynamoRepository) ListArtists(ctx context.Context) ([]*domain.Artist, error) {
+func (d *DynamoRepository) ListArtists(ctx context.Context) ([]*setmakerpb.Artist, error) {
 	// create artist
-	return []*domain.Artist{}, nil
+	return []*setmakerpb.Artist{}, nil
 }
 
-func (d *DynamoRepository) GetArtist(ctx context.Context, id uuid.UUID) (*domain.Artist, error) {
+func (d *DynamoRepository) GetArtist(ctx context.Context, id uuid.UUID) (*setmakerpb.Artist, error) {
 	// create key map
 	keys, err := attributevalue.MarshalMap(map[string]string{
 		"Id": *aws.String(id.String()),
@@ -51,7 +51,7 @@ func (d *DynamoRepository) GetArtist(ctx context.Context, id uuid.UUID) (*domain
 	logger.WithField("data", data.Item).Info("Artist found")
 
 	// unmarshal response
-	res := &domain.Artist{}
+	res := &setmakerpb.Artist{}
 	err = attributevalue.UnmarshalMap(data.Item, res)
 	if err != nil {
 		logger.WithField("data", data.Item).Errorf("could not unmarshal item: %s", err)
@@ -61,7 +61,7 @@ func (d *DynamoRepository) GetArtist(ctx context.Context, id uuid.UUID) (*domain
 	return res, nil
 }
 
-func (d *DynamoRepository) PutArtist(ctx context.Context, artist *domain.Artist) error {
+func (d *DynamoRepository) PutArtist(ctx context.Context, artist *setmakerpb.Artist) error {
 	// create attribute value map
 	item, err := attributevalue.MarshalMap(artist)
 	if err != nil {

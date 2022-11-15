@@ -4,15 +4,14 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/pete-robinson/set-maker-grpc/internal/grpc/api"
-	"github.com/pete-robinson/set-maker-grpc/internal/grpc/domain"
+	setmakerpb "github.com/pete-robinson/setmaker-proto/dist"
 	logger "github.com/sirupsen/logrus"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
-func (s *Server) GetArtist(ctx context.Context, id *wrapperspb.StringValue) (*domain.Artist, error) {
+func (s *Server) GetArtist(ctx context.Context, id *wrapperspb.StringValue) (*setmakerpb.Artist, error) {
 	logger.WithField("id", id).Info("Attempting to fetch artist")
 
 	// parse UUID
@@ -31,10 +30,10 @@ func (s *Server) GetArtist(ctx context.Context, id *wrapperspb.StringValue) (*do
 	return artist, nil
 }
 
-func (s *Server) CreateArtist(ctx context.Context, req *api.CreateArtistRequest) (*domain.Artist, error) {
+func (s *Server) CreateArtist(ctx context.Context, req *setmakerpb.CreateArtistRequest) (*setmakerpb.Artist, error) {
 	logger.WithField("request", req).Info("Creating artist")
 
-	artist := &domain.Artist{
+	artist := &setmakerpb.Artist{
 		Name:  req.Name,
 		Image: req.Image,
 	}
@@ -47,7 +46,7 @@ func (s *Server) CreateArtist(ctx context.Context, req *api.CreateArtistRequest)
 	return created, nil
 }
 
-func (s *Server) UpdateArtist(ctx context.Context, req *api.UpdateArtistRequest) (*domain.Artist, error) {
+func (s *Server) UpdateArtist(ctx context.Context, req *setmakerpb.UpdateArtistRequest) (*setmakerpb.Artist, error) {
 	// validate the UUID
 	_, err := uuid.Parse(req.Id)
 	if err != nil {
@@ -55,7 +54,7 @@ func (s *Server) UpdateArtist(ctx context.Context, req *api.UpdateArtistRequest)
 		return nil, status.Error(codes.InvalidArgument, "Invalid artist Id")
 	}
 
-	artist := &domain.Artist{
+	artist := &setmakerpb.Artist{
 		Id:    req.Id,
 		Name:  req.Name,
 		Image: req.Image,
@@ -70,7 +69,7 @@ func (s *Server) UpdateArtist(ctx context.Context, req *api.UpdateArtistRequest)
 	return resp, nil
 }
 
-func (s *Server) DeleteArtist(ctx context.Context, id *wrapperspb.StringValue) (*api.DeleteArtistResponse, error) {
+func (s *Server) DeleteArtist(ctx context.Context, id *wrapperspb.StringValue) (*setmakerpb.DeleteArtistResponse, error) {
 	logger.WithField("id", id.GetValue()).Info("Deleting artist")
 
 	// parse UUID
@@ -83,7 +82,7 @@ func (s *Server) DeleteArtist(ctx context.Context, id *wrapperspb.StringValue) (
 	logger.WithField("uuid", uuid).Info("Generated UUID")
 
 	// run delete
-	resp := &api.DeleteArtistResponse{
+	resp := &setmakerpb.DeleteArtistResponse{
 		Id:      uuid.String(),
 		Deleted: false,
 	}
@@ -99,6 +98,6 @@ func (s *Server) DeleteArtist(ctx context.Context, id *wrapperspb.StringValue) (
 	return resp, nil
 }
 
-func (s *Server) ListArtists(ctx context.Context, req *api.ListArtistsRequest) (*api.ListArtistsResponse, error) {
-	return &api.ListArtistsResponse{}, nil
+func (s *Server) ListArtists(ctx context.Context, req *setmakerpb.ListArtistsRequest) (*setmakerpb.ListArtistsResponse, error) {
+	return &setmakerpb.ListArtistsResponse{}, nil
 }

@@ -5,11 +5,11 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
-	"github.com/pete-robinson/set-maker-grpc/internal/grpc/api"
 	repository "github.com/pete-robinson/set-maker-grpc/internal/repository/ddb"
 	"github.com/pete-robinson/set-maker-grpc/internal/service"
 	transport "github.com/pete-robinson/set-maker-grpc/internal/transport/grpc"
 	"github.com/pete-robinson/set-maker-grpc/internal/utils"
+	setmakerpb "github.com/pete-robinson/setmaker-proto/dist"
 	logger "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -57,7 +57,7 @@ func main() {
 		panic(err)
 	}
 	s := grpc.NewServer()
-	api.RegisterSetMakerServiceServer(s, server)
+	setmakerpb.RegisterSetMakerServiceServer(s, server)
 	reflection.Register(s)
 
 	err = utils.RunGrpcServer(ctx, s)
