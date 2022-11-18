@@ -19,6 +19,7 @@ const (
 	EnvAwsAccessKey    = "AWS_ACCESS_KEY_ID"
 	EnvAwsAccessSecret = "AWS_SECRET_ACCESS_KEY"
 	EnvAwsRegion       = "AWS_REGION"
+	EnvSnsTopic        = "EVENT_TOPIC"
 )
 
 func main() {
@@ -42,17 +43,20 @@ func main() {
 		panic(err)
 	}
 
+	// init repository
 	dynamoClient := utils.CreateDynamoClient(awsConfig)
-	snsClient := utils.CreateSnsClient(awsConfig)
-
-	// init epository
 	repo := repository.NewDynamoRepository(dynamoClient)
 
+	// sns service
+	snsClient := utils.CreateSnsClient(awsConfig)
+	t := service.SnsTopic(os.Getenv(EnvSnsTopic))
+	sns := service.NewSnsClient(snsClient, t)
+
 	// init Service
-	service := service.NewService(repo, snsClient)
+	svc := service.NewService(repo, sns)
 
 	// init GRPC Server
-	server, err := transport.NewServer(service)
+	server, err := transport.NewServer(svc)
 	if err != nil {
 		panic(err)
 	}
