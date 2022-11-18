@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 
-	"github.com/aws/aws-sdk-go-v2/service/sns"
 	"github.com/google/uuid"
 	setmakerpb "github.com/pete-robinson/setmaker-proto/dist"
 )
@@ -15,12 +14,16 @@ type Repository interface {
 	DeleteArtist(context.Context, uuid.UUID) error
 }
 
-type Service struct {
-	repository Repository
-	snsClient  *sns.Client
+type Notifier interface {
+	RaiseArtistCreatedEvent(context.Context, *setmakerpb.Artist) error
 }
 
-func NewService(repo Repository, sns *sns.Client) *Service {
+type Service struct {
+	repository Repository
+	snsClient  Notifier
+}
+
+func NewService(repo Repository, sns Notifier) *Service {
 	return &Service{
 		repository: repo,
 		snsClient:  sns,

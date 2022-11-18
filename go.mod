@@ -6,7 +6,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.17.1
 	github.com/google/uuid v1.1.2
 	github.com/joho/godotenv v1.4.0
-	github.com/pete-robinson/setmaker-proto v1.0.0
+	github.com/pete-robinson/setmaker-proto v1.0.1
 	github.com/sirupsen/logrus v1.9.0
 	google.golang.org/grpc v1.50.1
 	google.golang.org/protobuf v1.28.1
