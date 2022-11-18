@@ -1,7 +1,6 @@
 # Binaries for programs and plugins
 *.so
 *.dylib
-go.sum
 .env
 
 # Test binary, built with `go test -c`
