@@ -4,11 +4,12 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	repository "github.com/pete-robinson/set-maker-grpc/internal/repository/ddb"
 	setmakerpb "github.com/pete-robinson/setmaker-proto/dist"
 )
 
 type Repository interface {
-	ListArtists(context.Context) ([]*setmakerpb.Artist, error)
+	ListArtists(context.Context, int32, string) (*repository.ArtistList, error)
 	GetArtist(context.Context, uuid.UUID) (*setmakerpb.Artist, error)
 	PutArtist(context.Context, *setmakerpb.Artist) error
 	DeleteArtist(context.Context, uuid.UUID) error

@@ -4,12 +4,27 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	repository "github.com/pete-robinson/set-maker-grpc/internal/repository/ddb"
 	"github.com/pete-robinson/set-maker-grpc/internal/utils"
 	setmakerpb "github.com/pete-robinson/setmaker-proto/dist"
 	logger "github.com/sirupsen/logrus"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
+
+func (s *Service) ListArtists(ctx context.Context, limit int32, cursor string) (*repository.ArtistList, error) {
+	res, err := s.repository.ListArtists(ctx, limit, cursor)
+	if err != nil {
+		return nil, err
+	}
+
+	logger.WithFields(logger.Fields{
+		"result count": res.Count,
+		"cursor": res.Cursor,
+	}).Info("Results found")
+
+	return res, nil
+}
 
 func (s *Service) GetArtist(ctx context.Context, id uuid.UUID) (*setmakerpb.Artist, error) {
 	artist, err := s.repository.GetArtist(ctx, id)
@@ -27,8 +42,7 @@ func (s *Service) CreateArtist(ctx context.Context, artist *setmakerpb.Artist) (
 	artist.Metadata = &setmakerpb.Metadata{}
 	utils.SetMetaData(artist.Metadata)
 
-	err := s.repository.PutArtist(ctx, artist)
-	if err != nil {
+	if err := s.repository.PutArtist(ctx, artist); err != nil {
 		logger.WithField("data", artist).Errorf("Could not create artist: %s", err)
 		return nil, err
 	}
@@ -58,8 +72,7 @@ func (s *Service) UpdateArtist(ctx context.Context, artist *setmakerpb.Artist) (
 	utils.SetMetaData(target.Metadata)
 
 	// update artist
-	err = s.repository.PutArtist(ctx, target)
-	if err != nil {
+	if err = s.repository.PutArtist(ctx, target); err != nil {
 		return nil, err
 	}
 
@@ -67,8 +80,7 @@ func (s *Service) UpdateArtist(ctx context.Context, artist *setmakerpb.Artist) (
 }
 
 func (s *Service) DeleteArtist(ctx context.Context, id uuid.UUID) error {
-	err := s.repository.DeleteArtist(ctx, id)
-	if err != nil {
+	if err := s.repository.DeleteArtist(ctx, id); err != nil {
 		return err
 	}
 
