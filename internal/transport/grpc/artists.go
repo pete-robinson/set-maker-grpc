@@ -12,7 +12,7 @@ import (
 )
 
 func (s *Server) GetArtist(ctx context.Context, id *wrapperspb.StringValue) (*setmakerpb.Artist, error) {
-	logger.WithField("id", id).Info("Attempting to fetch artist")
+	logger.WithField("id", id).Info("GRPC: Fetching artist")
 
 	// parse UUID
 	uuid, err := uuid.Parse(id.Value)
@@ -31,7 +31,7 @@ func (s *Server) GetArtist(ctx context.Context, id *wrapperspb.StringValue) (*se
 }
 
 func (s *Server) CreateArtist(ctx context.Context, req *setmakerpb.CreateArtistRequest) (*setmakerpb.Artist, error) {
-	logger.WithField("request", req).Info("Creating artist")
+	logger.WithField("request", req).Info("GRPC: Creating artist")
 
 	artist := &setmakerpb.Artist{
 		Name:  req.Name,
@@ -47,9 +47,10 @@ func (s *Server) CreateArtist(ctx context.Context, req *setmakerpb.CreateArtistR
 }
 
 func (s *Server) UpdateArtist(ctx context.Context, req *setmakerpb.UpdateArtistRequest) (*setmakerpb.Artist, error) {
+	logger.WithField("request", req).Info("GRPC: Updating Artist")
+
 	// validate the UUID
-	_, err := uuid.Parse(req.Id)
-	if err != nil {
+	if _, err := uuid.Parse(req.Id); err != nil {
 		logger.WithField("uuid", req.Id).Errorf("Could not parse UUID: %s", err)
 		return nil, status.Error(codes.InvalidArgument, "Invalid artist Id")
 	}
@@ -70,7 +71,7 @@ func (s *Server) UpdateArtist(ctx context.Context, req *setmakerpb.UpdateArtistR
 }
 
 func (s *Server) DeleteArtist(ctx context.Context, id *wrapperspb.StringValue) (*setmakerpb.DeleteArtistResponse, error) {
-	logger.WithField("id", id.GetValue()).Info("Deleting artist")
+	logger.WithField("id", id.GetValue()).Info("GRPC: Deleting artist")
 
 	// parse UUID
 	uuid, err := uuid.Parse(id.GetValue())
@@ -87,8 +88,7 @@ func (s *Server) DeleteArtist(ctx context.Context, id *wrapperspb.StringValue) (
 		Deleted: false,
 	}
 
-	err = s.service.DeleteArtist(ctx, uuid)
-	if err != nil {
+	if err = s.service.DeleteArtist(ctx, uuid); err != nil {
 		return nil, err
 	}
 
@@ -99,5 +99,21 @@ func (s *Server) DeleteArtist(ctx context.Context, id *wrapperspb.StringValue) (
 }
 
 func (s *Server) ListArtists(ctx context.Context, req *setmakerpb.ListArtistsRequest) (*setmakerpb.ListArtistsResponse, error) {
-	return &setmakerpb.ListArtistsResponse{}, nil
+	logger.WithField("req", req).Info("GRPC: Listing artists")
+
+	resp, err := s.service.ListArtists(ctx, req.Limit, req.Cursor)
+	if err != nil {
+		logger.WithFields(logger.Fields{
+			"limit": req.Limit,
+			"cursor": req.Cursor,
+		}).Errorf("Error listing artists: %s", err)
+		return nil, err
+	}
+
+	r := &setmakerpb.ListArtistsResponse{
+		Results: resp.Items,
+		SearchAfter: resp.Cursor,
+	}
+
+	return r, nil
 }

@@ -39,8 +39,7 @@ func (s *SnsClient) RaiseArtistCreatedEvent(ctx context.Context, artist *setmake
 	logger.WithField("MessageBody", event).Infof("Raising event: %s", setmakerpb.Event_EventType_name[int32(event.EventType)])
 
 	// raise the event
-	_, err := s.raise(ctx, event)
-	if err != nil {
+	if _, err := s.raise(ctx, event); err != nil {
 		return err
 	}
 
