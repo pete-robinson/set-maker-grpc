@@ -28,6 +28,7 @@ func (d *DynamoRepository) ListArtists(ctx context.Context, limit int32, cursor 
 	c, err := utils.DecodeAttributeMap(cursor)
 	if err != nil {
 		logger.WithField("cursor", cursor).Errorf("ListArtists Repo: Could not decode cursor: %s", err)
+		return nil, err
 	}
 
 	// build DDB scan input

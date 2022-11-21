@@ -18,7 +18,6 @@ func CreateDynamoClient(cfg aws.Config) *dynamodb.Client {
 // Builds a base64 encoded byte slice from a dynamodb attribute value map
 // Used for pagination cursors
 func EncodeAttributeMap(in map[string]types.AttributeValue) (string, error) {
-	// fmt.Printf("\n\n\n%v\n\n\n", in)
 	if in == nil {
 		return "", nil
 	}
