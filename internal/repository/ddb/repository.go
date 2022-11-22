@@ -13,6 +13,7 @@ type DynamoRepository struct {
 	client *dynamodb.Client
 }
 
+
 func NewDynamoRepository(client *dynamodb.Client) *DynamoRepository {
 	return &DynamoRepository{
 		client: client,

@@ -10,6 +10,7 @@ type Server struct {
 	setmakerpb.UnimplementedSetMakerServiceServer
 }
 
+
 func NewServer(svc *service.Service) (*Server, error) {
 	return &Server{
 		service: svc,

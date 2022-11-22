@@ -11,6 +11,7 @@ import (
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
+
 func (s *Server) GetArtist(ctx context.Context, id *wrapperspb.StringValue) (*setmakerpb.Artist, error) {
 	logger.WithField("id", id).Info("GRPC: Fetching artist")
 
@@ -30,6 +31,7 @@ func (s *Server) GetArtist(ctx context.Context, id *wrapperspb.StringValue) (*se
 	return artist, nil
 }
 
+
 func (s *Server) CreateArtist(ctx context.Context, req *setmakerpb.CreateArtistRequest) (*setmakerpb.Artist, error) {
 	logger.WithField("request", req).Info("GRPC: Creating artist")
 
@@ -45,6 +47,7 @@ func (s *Server) CreateArtist(ctx context.Context, req *setmakerpb.CreateArtistR
 
 	return created, nil
 }
+
 
 func (s *Server) UpdateArtist(ctx context.Context, req *setmakerpb.UpdateArtistRequest) (*setmakerpb.Artist, error) {
 	logger.WithField("request", req).Info("GRPC: Updating Artist")
@@ -69,6 +72,7 @@ func (s *Server) UpdateArtist(ctx context.Context, req *setmakerpb.UpdateArtistR
 
 	return resp, nil
 }
+
 
 func (s *Server) DeleteArtist(ctx context.Context, id *wrapperspb.StringValue) (*setmakerpb.DeleteArtistResponse, error) {
 	logger.WithField("id", id.GetValue()).Info("GRPC: Deleting artist")
@@ -97,6 +101,7 @@ func (s *Server) DeleteArtist(ctx context.Context, id *wrapperspb.StringValue) (
 
 	return resp, nil
 }
+
 
 func (s *Server) ListArtists(ctx context.Context, req *setmakerpb.ListArtistsRequest) (*setmakerpb.ListArtistsResponse, error) {
 	logger.WithField("req", req).Info("GRPC: Listing artists")

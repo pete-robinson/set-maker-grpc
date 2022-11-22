@@ -17,12 +17,14 @@ type SnsClient struct {
 
 type SnsTopic string
 
+
 func NewSnsClient(client *sns.Client, topic SnsTopic) *SnsClient {
 	return &SnsClient{
 		client:   client,
 		topicArn: topic,
 	}
 }
+
 
 func (s *SnsClient) RaiseArtistCreatedEvent(ctx context.Context, artist *setmakerpb.Artist) error {
 	// build the message body
@@ -45,6 +47,7 @@ func (s *SnsClient) RaiseArtistCreatedEvent(ctx context.Context, artist *setmake
 
 	return nil
 }
+
 
 func (s *SnsClient) raise(ctx context.Context, event *setmakerpb.Event) (*string, error) {
 	// marshal message

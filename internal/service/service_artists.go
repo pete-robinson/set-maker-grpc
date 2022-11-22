@@ -12,6 +12,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+
 func (s *Service) ListArtists(ctx context.Context, limit int32, cursor string) (*repository.ArtistList, error) {
 	res, err := s.repository.ListArtists(ctx, limit, cursor)
 	if err != nil {
@@ -26,6 +27,7 @@ func (s *Service) ListArtists(ctx context.Context, limit int32, cursor string) (
 	return res, nil
 }
 
+
 func (s *Service) GetArtist(ctx context.Context, id uuid.UUID) (*setmakerpb.Artist, error) {
 	artist, err := s.repository.GetArtist(ctx, id)
 	if err != nil {
@@ -35,6 +37,7 @@ func (s *Service) GetArtist(ctx context.Context, id uuid.UUID) (*setmakerpb.Arti
 
 	return artist, nil
 }
+
 
 func (s *Service) CreateArtist(ctx context.Context, artist *setmakerpb.Artist) (*setmakerpb.Artist, error) {
 	// init UUID and meta
@@ -53,6 +56,7 @@ func (s *Service) CreateArtist(ctx context.Context, artist *setmakerpb.Artist) (
 
 	return artist, nil
 }
+
 
 func (s *Service) UpdateArtist(ctx context.Context, artist *setmakerpb.Artist) (*setmakerpb.Artist, error) {
 	// fetch the artist to update
@@ -78,6 +82,7 @@ func (s *Service) UpdateArtist(ctx context.Context, artist *setmakerpb.Artist) (
 
 	return target, nil
 }
+
 
 func (s *Service) DeleteArtist(ctx context.Context, id uuid.UUID) error {
 	if err := s.repository.DeleteArtist(ctx, id); err != nil {
