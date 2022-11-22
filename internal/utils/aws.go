@@ -12,6 +12,7 @@ type AwsConfig struct {
 	Region string
 }
 
+
 func BuildAwsConfig(ctx context.Context, config *AwsConfig) (aws.Config, error) {
 	cfg := aws.Config{}
 
@@ -25,6 +26,7 @@ func BuildAwsConfig(ctx context.Context, config *AwsConfig) (aws.Config, error) 
 
 	return cfg, nil
 }
+
 
 func CreateSnsClient(cfg aws.Config) *sns.Client {
 	client := sns.NewFromConfig(cfg)

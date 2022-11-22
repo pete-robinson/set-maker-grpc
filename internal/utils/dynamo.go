@@ -10,10 +10,11 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
 
+
 func CreateDynamoClient(cfg aws.Config) *dynamodb.Client {
-	client := dynamodb.NewFromConfig(cfg)
-	return client
+	return dynamodb.NewFromConfig(cfg)
 }
+
 
 // Builds a base64 encoded byte slice from a dynamodb attribute value map
 // Used for pagination cursors
@@ -38,6 +39,7 @@ func EncodeAttributeMap(in map[string]types.AttributeValue) (string, error) {
 	return base64.StdEncoding.EncodeToString(jsn), nil
 }
 
+
 func DecodeAttributeMap(in string) (map[string]types.AttributeValue, error) {
 	if in == "" {
 		return nil, nil
@@ -56,11 +58,5 @@ func DecodeAttributeMap(in string) (map[string]types.AttributeValue, error) {
 	}
 
 	// finally pass the resulting map to Dynamo's helpers to create a map[string]types.AttributeValue
-	resp, err := attributevalue.MarshalMap(key)
-	if err != nil {
-		return nil, err
-	}
-
-	return resp, nil
-
+	return attributevalue.MarshalMap(key)
 }

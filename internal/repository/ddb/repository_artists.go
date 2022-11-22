@@ -15,13 +15,12 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-const TableName = "artists"
-
 type ArtistList struct {
 	Count int32
 	Cursor string
 	Items []*setmakerpb.Artist
 }
+
 
 func (d *DynamoRepository) ListArtists(ctx context.Context, limit int32, cursor string) (*ArtistList, error) {
 	// decode the cursor
@@ -33,7 +32,7 @@ func (d *DynamoRepository) ListArtists(ctx context.Context, limit int32, cursor 
 
 	// build DDB scan input
 	input := dynamodb.ScanInput{
-		TableName: aws.String(TableName),
+		TableName: aws.String(ArtistsTable),
 		Limit: &limit,
 		ExclusiveStartKey: c,
 	}
@@ -43,7 +42,7 @@ func (d *DynamoRepository) ListArtists(ctx context.Context, limit int32, cursor 
 		"cursor": cursor,
 	}).Info("ListArtists Repo: Scanning dynamo")
 
-	// query DDB
+	// scan DDB
 	res, err := d.client.Scan(ctx, &input)
 	if err != nil {
 		logger.WithFields(logger.Fields{
@@ -52,8 +51,6 @@ func (d *DynamoRepository) ListArtists(ctx context.Context, limit int32, cursor 
 			"input": input,
 		}).Errorf("ListArtists Repo: Error scanning: %s", err)
 	}
-
-	logger.WithField("result count", res.Count).Info("ListArtists Repo: Results returned")
 
 	// encode the return cursor
 	returnCursor, err := utils.EncodeAttributeMap(res.LastEvaluatedKey)
@@ -69,14 +66,13 @@ func (d *DynamoRepository) ListArtists(ctx context.Context, limit int32, cursor 
 		return nil, err
 	}
 
-	resp := &ArtistList{
+	return &ArtistList{
 		Count: res.Count,
 		Cursor: string(returnCursor),
 		Items: items,
-	}
-
-	return resp, nil
+	}, nil
 }
+
 
 func (d *DynamoRepository) GetArtist(ctx context.Context, id uuid.UUID) (*setmakerpb.Artist, error) {
 	// create key map
@@ -84,72 +80,74 @@ func (d *DynamoRepository) GetArtist(ctx context.Context, id uuid.UUID) (*setmak
 		"Id": *aws.String(id.String()),
 	})
 	if err != nil {
-		logger.WithField("id", id).Errorf("GetArtists: Could not marshalmap: %s", err)
+		logger.WithField("id", id).Errorf("GetArtist Repo: Could not marshalmap: %s", err)
 		return nil, status.Error(codes.InvalidArgument, "Invalid UUID")
 	}
 
 	// fetch item from dynamo
 	data, err := d.client.GetItem(ctx, &dynamodb.GetItemInput{
-		TableName: aws.String(TableName),
+		TableName: aws.String(ArtistsTable),
 		Key:       keys,
 	})
 	if err != nil {
-		logger.WithField("id", id).Errorf("GetArtists: Error fetching from dynamo: %s", err)
+		logger.WithField("id", id).Errorf("GetArtist Repo: Error fetching from dynamo: %s", err)
 		return nil, status.Error(codes.Internal, "Error fetching result")
 	}
 
 	// check an item was returned
 	if data.Item == nil {
-		logger.WithField("id", id).Error("GetArtists: No artist found for ID")
+		logger.WithField("id", id).Error("GetArtist Repo: No artist found for ID")
 		return nil, status.Error(codes.NotFound, "Artist not found")
 	}
 
 	// fetch was successful
-	logger.WithField("data", data.Item).Info("GetArtists: Artist found")
+	logger.WithField("data", data.Item).Info("GetArtist Repo: Artist found")
 
 	// unmarshal response
 	res := &setmakerpb.Artist{}
 	if err = attributevalue.UnmarshalMap(data.Item, res); err != nil {
-		logger.WithField("data", data.Item).Errorf("GetArtists: Could not unmarshal item: %s", err)
+		logger.WithField("data", data.Item).Errorf("GetArtist Repo: Could not unmarshal item: %s", err)
 		return nil, status.Error(codes.Internal, "Error unmarshaling artist data")
 	}
 
 	return res, nil
 }
 
+
 func (d *DynamoRepository) PutArtist(ctx context.Context, artist *setmakerpb.Artist) error {
 	// create attribute value map
 	item, err := attributevalue.MarshalMap(artist)
 	if err != nil {
-		logger.WithField("data", artist).Errorf("GetArtists: Could not marshalmap: %s", err)
+		logger.WithField("data", artist).Errorf("PutArtist Repo: Could not marshalmap: %s", err)
 		return status.Error(codes.InvalidArgument, "Could not map input values for artist")
 	}
 
 	// PutItem to dynamo
 	_, err = d.client.PutItem(ctx, &dynamodb.PutItemInput{
-		TableName: aws.String(TableName),
+		TableName: aws.String(ArtistsTable),
 		Item:      item,
 	})
 	if err != nil {
-		logger.WithField("data", artist).Errorf("GetArtists: Could not PutItem: %s", err)
+		logger.WithField("data", artist).Errorf("PutArtist Repo: Could not PutItem: %s", err)
 		return status.Error(codes.Internal, "Failed to persist artist")
 	}
 
-	logger.WithField("id", artist.Id).Info("GetArtists: Artist persisted successfully")
+	logger.WithField("id", artist.Id).Info("PutArtist Repo: Artist persisted successfully")
 	return nil
 }
 
+
 func (d *DynamoRepository) DeleteArtist(ctx context.Context, id uuid.UUID) error {
-	logger.WithField("id", id).Infof("GetArtists: Deleting artist")
+	logger.WithField("id", id).Infof("DeleteArtist Repo: Deleting artist")
 
 	_, err := d.client.DeleteItem(ctx, &dynamodb.DeleteItemInput{
-		TableName: aws.String(TableName),
+		TableName: aws.String(ArtistsTable),
 		Key: map[string]types.AttributeValue{
 			"Id": &types.AttributeValueMemberS{Value: id.String()},
 		},
 	})
 	if err != nil {
-		logger.WithField("id", id).Errorf("GetArtists: Could not delete artist: %s", err)
+		logger.WithField("id", id).Errorf("DeleteArtist Repo: Could not delete artist: %s", err)
 		return status.Error(codes.Internal, "Artist could not be deleted")
 	}
 

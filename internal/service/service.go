@@ -13,6 +13,12 @@ type Repository interface {
 	GetArtist(context.Context, uuid.UUID) (*setmakerpb.Artist, error)
 	PutArtist(context.Context, *setmakerpb.Artist) error
 	DeleteArtist(context.Context, uuid.UUID) error
+
+	ListSongs(context.Context, int32, string) (*repository.SongList, error)
+	ListSongsByArtist(context.Context, int32, string, string) (*repository.SongList, error)
+	GetSong(context.Context, uuid.UUID) (*setmakerpb.Song, error)
+	PutSong(context.Context, *setmakerpb.Song) error
+	DeleteSong(context.Context, uuid.UUID) error
 }
 
 type Notifier interface {
@@ -23,6 +29,7 @@ type Service struct {
 	repository Repository
 	snsClient  Notifier
 }
+
 
 func NewService(repo Repository, sns Notifier) *Service {
 	return &Service{
